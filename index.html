@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Calling APIs</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="calling_apis_handbook_files/libs/clipboard/clipboard.min.js"></script>
+<script src="calling_apis_handbook_files/libs/quarto-html/quarto.js"></script>
+<script src="calling_apis_handbook_files/libs/quarto-html/popper.min.js"></script>
+<script src="calling_apis_handbook_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="calling_apis_handbook_files/libs/quarto-html/anchor.min.js"></script>
+<link href="calling_apis_handbook_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="calling_apis_handbook_files/libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="calling_apis_handbook_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="calling_apis_handbook_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="calling_apis_handbook_files/libs/bootstrap/bootstrap-eba12755a715931efe68ba4464a7bfac.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-is-an-api" id="toc-what-is-an-api" class="nav-link active" data-scroll-target="#what-is-an-api"><span class="header-section-number">1</span> What is an API?</a></li>
+  <li><a href="#why-do-we-use-api-keys" id="toc-why-do-we-use-api-keys" class="nav-link" data-scroll-target="#why-do-we-use-api-keys"><span class="header-section-number">2</span> Why Do We Use API Keys?</a>
+  <ul class="collapse">
+  <li><a href="#managing-api-keys-dos-donts" id="toc-managing-api-keys-dos-donts" class="nav-link" data-scroll-target="#managing-api-keys-dos-donts"><span class="header-section-number">2.1</span> Managing API Keys: Dos &amp; Don’ts</a></li>
+  </ul></li>
+  <li><a href="#creating-your-first-api-key" id="toc-creating-your-first-api-key" class="nav-link" data-scroll-target="#creating-your-first-api-key"><span class="header-section-number">3</span> Creating Your First API Key</a>
+  <ul class="collapse">
+  <li><a href="#obtain-api-key-authentication-openai-api" id="toc-obtain-api-key-authentication-openai-api" class="nav-link" data-scroll-target="#obtain-api-key-authentication-openai-api"><span class="header-section-number">3.1</span> Obtain API Key &amp; Authentication: OpenAI API</a></li>
+  <li><a href="#huggingface-api-key" id="toc-huggingface-api-key" class="nav-link" data-scroll-target="#huggingface-api-key"><span class="header-section-number">3.2</span> HuggingFace API Key</a></li>
+  </ul></li>
+  <li><a href="#endpointr-api-usage" id="toc-endpointr-api-usage" class="nav-link" data-scroll-target="#endpointr-api-usage"><span class="header-section-number">4</span> EndpointR &amp; API Usage</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Calling APIs</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+.custom-green details {
+  border: 2px solid #22c55e;
+  border-radius: 8px;
+  padding: 0;
+  background-color: #1a1a1a;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.custom-green summary {
+  background-color: #22c55e;
+  color: #000000;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  list-style: none;
+  user-select: none;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.custom-green summary:hover {
+  background-color: #16a34a;
+}
+
+.custom-green summary::before {
+  content: "▶";
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+  font-size: 14px;
+}
+
+.custom-green details[open] summary::before {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.custom-green .content {
+  padding: 20px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.custom-green pre {
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 15px;
+  margin: 15px 0;
+  color: #f8f8f2;
+  overflow-x: auto;
+}
+
+.custom-green code {
+  background-color: #374151;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #e5e7eb;
+}
+</style>
+<section id="what-is-an-api" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> What is an API?</h1>
+<p>API, or Application Programming Interface, is a mechanism that allows for two pieces of software to interact and exchange data. APIs function through sending requests from an endpoint. In ‘real life’ practice, this might mean we as a team send a request to a model for information in return. We either get the requested information or an error message in return.</p>
+<p>As APIs may provide access to confidential or sensitive information, providers need to able to verify from whom a request is being sent, to ensure they can safely fulfil an ask (and know where to charge for the request!). This is where API keys come in.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Think of an API like ordering food at a restaurant. You, (the intrepid DS team member) make a request to the waiter (the API), who takes it to the kitchen (the server) and brings back your meal (the data) or tells you it’s not available on the menu (an error).</p>
+</div>
+</div>
+</section>
+<section id="why-do-we-use-api-keys" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Why Do We Use API Keys?</h1>
+<p>There are a number of use cases when we’ll need to request the services of models, be it in client-facing projects or internal work. We may face a problem or research question that requires us to request access to specific models through an API.</p>
+<p>Generally speaking, we’ll find ourselves using something like the OpenAI API for tasks, especially when we are in need of their advanced text models (GPT) for tasks such as classification, or even for specific stages of a workflow, like topic modelling. API keys thus help provide access to these tools, and consequently, are a great resource when we have a particular research problem to solve.</p>
+<p>One of the key advantages of using an API instead of downloading and running these models locally (or utilising open-source models) is that it allows us to leverage the computational power and optimisation of the models without needing expensive hardware or vast computational resources.</p>
+<section id="managing-api-keys-dos-donts" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="managing-api-keys-dos-donts"><span class="header-section-number">2.1</span> Managing API Keys: Dos &amp; Don’ts</h2>
+<p>API keys are foundational for access to leverage these AI models, however, as one fictional mentor-figure once advised, “with great power comes great responsibility”.</p>
+<p>We know API keys have the potential of granting access to sensitive information or services, and if leaked, this could spell trouble down the line as people abuse requests or ramp up unexpected costs. We need to be particularly prudent in how we handle API key ‘security hygiene’.</p>
+<p><strong>1. Never ‘Hard-Code’ API Keys </strong></p>
+<p>Avoid storing API keys directly in your code as hard-coded variables. This exposes them to anyone with access to your codebase.</p>
+<p><strong>2. Use Environment Variables </strong></p>
+<p>Store API keys in environment variables to keep them separate from the code. This ensures sensitive data isn’t exposed, and it’s easier to manage keys across different environments if required (development, production, etc.). We will see later in this document that EndpointR offers a tenable solution to this concern. You can also store them as managed secrets by providers like GitHub or Google Colab, for use outside of R/Rstudio/VScode.</p>
+<p><strong>3. Version Control Precautions</strong></p>
+<p>Make sure to add environment files that contain sensitive information (like <code>.env</code>, <code>.Renviron</code>, and <code>.Rhistory</code>) to <code>.gitignore</code> so they don’t get uploaded to version control systems like GitHub. Exposing API keys in public repositories is a common mistake, and it can be a serious security risk.</p>
+</section>
+</section>
+<section id="creating-your-first-api-key" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Creating Your First API Key</h1>
+<p>We use the OpenAI API similarly to other public APIs: sign up for an account, obtain an API key, and use it to make API calls to specific models using HTTP requests. You may find there are some use cases whereby you’d need to obtain a HuggingFace API key (dependent on the project or task), in which case, the steps are fairly similar to those of OpenAI.</p>
+<p>The principle to navigating public APIs remain pretty consistent across the board: sign up for an account (be it OpenAI API, HuggingFace etc), obtain your API key, and then use it to make API calls to specific models. In the case of OpenAI’s API, these calls use HTTP requests.</p>
+<section id="obtain-api-key-authentication-openai-api" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="obtain-api-key-authentication-openai-api"><span class="header-section-number">3.1</span> Obtain API Key &amp; Authentication: OpenAI API</h2>
+<p>Let’s say you’re wanting to work on a text model to help with classification, or you want to use OpenAI’s advanced models to help label some data (and your prompt is top-notch). You’ll need this key access to their API, much like any fearless, fantasy RPG protagonist needs a way to unlock useful treasures.</p>
+<p>For OpenAI, you will need to “unlock” access to their models by acquiring their key for authentication. By performing the following:</p>
+<p><strong>1.</strong> Go to platform.openai.com, and create an account using your SAMY email address.</p>
+<p><strong>2. </strong> Mike will then add you to the SAMY organisation within the platform. This allows you to access the usage credits we have a company for tasks which require API requests.</p>
+<p><strong>3.</strong> You will then want to reach the api-keys section. Click the green <code>Create new secret key</code> which you’ll find in the top corner.</p>
+<p><strong>4.</strong> You’ll have the option to rename the key to something useful - the name of the project or internal work will be helpful - and keep the OpenAI project as “Default project” and Permissions as “All”.</p>
+<p><strong>5.</strong> You will then be provided with the opportunity to copy the provided API key, this is the one chance you will get to obtain it- after you click off this pop up you won’t be able to view the full API key again and you’ll need to request a new one. Because of this, make sure you copy the key and add it to this private Google Sheet where the DS team keeps the API Keys. Remember that using the API costs money, so if this key is used by others we risk someone using up all of our API credits! We’ve discussed above the <code>Dos and Don'ts</code> of managing API keys, so if in any doubt, please refer to that section at anytime.</p>
+</section>
+<section id="huggingface-api-key" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="huggingface-api-key"><span class="header-section-number">3.2</span> HuggingFace API Key</h2>
+<p>Much like creating your own API key for OpenAI’s API, you can follow similar steps if you need to use a HuggingFace model for a particular workflow:</p>
+<p><strong>1.</strong> You will need to sign up for an account on HuggingFace wiht your SAMY email, and as before, request permission to have access to the organisational token permissions.</p>
+<p><strong>2. </strong> After creating your account, log in and go to your <code>Account Settings</code>. You can find this in the top-right corner of the screen.</p>
+<p><strong>3.</strong> You can find a dropdown option to access <code>Access Tokens</code> - this is where you can generate and manage your API keys.</p>
+<p><strong>4.</strong> You can create your new API key by clicking on <code>Generate New API Key</code>. Again, give it an appropriate name based on your research question or project. Make sure to adjust your permissions to <code>Read access</code> before generating the key so you will be able to access the API (more on permissions in the HuggingFace documentation on tokens).</p>
+<p><strong>5.</strong> Again, be sure to copy your new API key before leaving the page, as this is the only time it will be visible for you.</p>
+</section>
+</section>
+<section id="endpointr-api-usage" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> EndpointR &amp; API Usage</h1>
+<p>Thanks to the introduction of EndpointR into our workflow, managing API keys has become a great deal simpler (and safer). There are two main functions within EndpointR which help us manage API keys into our workflow, namely, get_api_key() and set_api_key(). There will be many more details on Jack’s EndpointR vignette, but for now, we can look at the ways we as a team handle interact with APIs in the most prevalent use cases.</p>
+<p>One big thing that helps our workflow a lot here is the fact the function set_api_key() uses askpass to accept API keys rather than code, so no keys will show up in your .Rhistory, and just adds an extra layer of security overall.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>- Use set_api_key() and determine your authorisation provider (e.g.&nbsp;OPEN_API_KEY or HF_API_KEY).</strong></p>
+<p><strong>- You will then be provided with an askpass pop-up box. Paste the API key you’ve copied from your API provider as discussed previously, and set this key for your workflow.</strong></p>
+<p><strong>- You only now need to call the api key with the get_api_key() function, as this key is now stored safely without any additional steps.</strong></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For comprehensive documentation on EndpointR functions and capabilities, refer to Jack’s EndpointR vignette. For information on installation, and further details regarding API key functions, please refer to the documentation written here.</p>
+</div>
+</div>
+<div class="custom-green">
+<details>
+<summary>
+Example Use Case: EndpointR &amp; API Key Functions
+<div class="content">
+<p>First we’d want to load in our EndpointR library:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EndpointR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now, from the steps of obtaining our secret key that we’ve discussed above, we’re going to set this key using one of EndpointR’s functions.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set_api_key</span>(<span class="st">"OPENAI_API_KEY"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>You will receive an askpass pop-up requiring you to paste in the API key assigned by your third party provider. This function essentially ‘assigns’ our secret key to this function. Once the key has been set, you will need to restart your RStudio session before continuing. This is also needed when we’re trying</p>
+<p>After we’ve done this, it’s possible to obtain our API key using the <code>get_api_key()</code> function in a safe, secure way that loads the key we need for access approval into our environment as a variable.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>api_key <span class="ot">&lt;-</span> <span class="fu">get_api_key</span>(<span class="st">"OPENAI_API_KEY"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>In our workstream, we’ll need to call this function for when we request a model to perform certain tasks, such as classification.</p>
+<p>Let’s take a look at a classifying task, for which we’ll need to use OpenAI’s GPT-4.1-mini. We will need to define the model we want in the ‘model’ argument (self-explanatory, really!), and because we already have our secret key as an environmental variable, OpenAI’s API permits us access for this task request.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>classifying_task <span class="ot">&lt;-</span> classifying_data_here <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">oai_complete_df</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">text_var =</span> english_translation_message,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_var =</span> row_id,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">system_prompt =</span> system_prompt,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">schema =</span> fortum_schema, <span class="at">max_tokens =</span> <span class="dv">500</span>L,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">concurrent_requests =</span> <span class="dv">100</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">output_file =</span> <span class="st">"data/your_classifying_data_here.csv"</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> <span class="st">"gpt-4.1-mini"</span>, <span class="co"># this works with our key loaded in</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">chunk_size =</span> <span class="dv">2000</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>(Here, we’re using a function for dataframes - but you can easily perform the same task with a single text, you just change the function accordingly.)</p>
+<p>The principles apply if we’re working with HuggingFace models. We will just need to adjust our code accordingly.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set_api_key</span>(<span class="st">"HF_API_KEY"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>This change translates to the other helper function:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_api_key</span>(<span class="st">"HF_API_KEY"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>You can follow the EndpointR documentation in greater depth to see how the rest of your code will flow as a result of these changes, but in essence, the principle is the exact same if we were calling OpenAI’s API.</p>
+<p>Again, the EndpointR documentation will have much more detail with regards to these variables and their use cases. But this gives us a general gist of how the API key functions work, and where we situate them in a given workflow.</p>
+</div></summary>
+</details>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It’s worth remembering that Hugging Face offers two inference options:</p>
+<p>Inference API: Free (so good for testing in workflows). Dedicated Endpoints: Reliable and fast, but costs money.</p>
+<p>Jack’s vignette goes over the Inference API, but you can easily switch your endpoint by changing the URL.</p>
+</div>
+</div>
+<section id="best-practices-for-team-usage-making-requests-to-the-api" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="best-practices-for-team-usage-making-requests-to-the-api"><span class="header-section-number">4.1</span> Best Practices for Team Usage: Making Requests to the API</h2>
+<p>Something you’ll find in your data science work is the importance of not just pressing a ‘run code’ button and assuming the work is done - we need the time and space to recognise whether something looks ‘not quite right’, or whether what we’re doing is statistically or empirically viable!</p>
+<p>In the case of making API requests, not only can spamming API asks be costly in usage, but we run the risk of missing pivotal insight.</p>
+<p>For example, not sense-checking our test output after running a prompt through the model can cause us more problems down the line if we later see the output looks ‘off’. Hence why workflows can be iterative and require food for thought between sending requests to text models.</p>
+<p>To save both money and potential issues down the line when making requests to the API, the emphasis should be on mini-experimentation - or testing- throughout the recourse of a workflow. Create dummmy data initially to check things are working - both from the sense of ‘the code works’ in addition to ‘the model output looks like something a human would label’, then begin to build up the prompt as needed as you run a sample of your working data.</p>
+<p>Being deliberate and measured in this initial part of your workflow can feel as though you’re being “slow”. In reality, not only is this far more likely to create higher quality output, but this is where the fun part of data science really kicks into gear: creativity, critical thinking, and employing the scientific method to prove our assumptions.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It can feel a bit tricky juggling the demands of workflows, deadlines, and producing quality output all at the same time. I advise even writing bullet points or notes as you go through each stage of testing a prompt on dummy/sampled data. Are there any types of data the model struggles to handle? What about edge cases? Have you included some ‘gotchas’ into your prompt to ensure the model can handle these more subtle cases? Anything of interest spring to mind? Asking these questions keeps you engaged throughout the work process.</p>
+</div>
+</div>
+<div class="custom-green">
+<details>
+<summary>
+Example Use Case: Dummy Data &amp; Prompt Building
+<div class="content">
+<p>We’ll load up EndpointR in case we haven’t already.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EndpointR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>As a reminder, we’ll use those lovely functions which simplify API calling massively. In this example, we’ll assume we’ve already set the API key. So we just need to retrieve it as an environment variable:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_api_key</span>(<span class="st">"OPENAI_API_KEY"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>For this sample workflow, we’ll be using OpenAI’s API to perform some simple sentiment analysis. Because we want to check it works right off the bat, we can get a completion for a single text only:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sentiment_system_prompt <span class="ot">=</span> <span class="st">"Classify the text into sentiment categories.</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="st">The accepted categories are 'positive', 'negative', 'neutral', and 'mixed'.</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="st">A 'mixed' text contains elements of both positive and negative."</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>text <span class="ot">&lt;-</span> <span class="st">"I love cats, they're so cute and full of mischief."</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">oai_complete_text</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> text,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">system_prompt =</span> sentiment_system_prompt,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"gpt-4.1-nano"</span> <span class="co"># EndpointR uses the cheaper model but you can change this as your needs suit</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Once we’ve identified that the code works, and the model isn’t spouting total nonsense, we can move onto create a dummy data frame - here, you can put in edge cases or gotchas and see how well your prompt accounts for these - or generate a randomised sample from your real-world data. Again, we want to be prudent enough not to run 100k + rows immediately in case we need to go back and tweak things - remember, API request costs add up!</p>
+<p>Notice here we use a different function when dealing with dataframes:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>review_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> <span class="fu">c</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Absolutely fantastic service! The staff were incredibly helpful and friendly."</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Terrible experience. Food was cold and the waiter was rude."</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Pretty good overall, but nothing special. Average food and service."</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Outstanding meal! Best restaurant I've been to in years. Highly recommend!"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Disappointed with the long wait times. Food was okay when it finally arrived."</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="fu">oai_complete_df</span>(</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  review_df,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">text_var =</span> text,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">id_var =</span> id,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_file =</span> <span class="cn">NULL</span>, <span class="co"># leave this to 'auto' to have your results written to a file in your current working directory</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">system_prompt =</span> sentiment_system_prompt,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">concurrent_requests =</span> <span class="dv">2</span>, </span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">chunk_size =</span> <span class="dv">5</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We will then need to continuously review the output in order to see whether 1) our prompt is pretty robust and 2) the model is able to fulfil our research question sufficiently. If we cannot answer these, it’s time to consider other approaches or ways we can solve our problem.</p>
+<p>Once we’re happy with our testing phase, we can then repeat these steps above with our data proper.</p>
+</div></summary>
+</details>
+</div>
+<section id="understanding-throughput" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Understanding Throughput</h1>
+<p>The throughput measures how many requests the API can handle efficiently within a time period.</p>
+<p>As implied through this document, there’s a knack to balancing the cost, model selection (and research question demands), and efficient request handling as we call APIs.</p>
+<section id="tokens-model-usage" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="tokens-model-usage"><span class="header-section-number">5.1</span> Tokens &amp; Model Usage</h2>
+<p>APIs generally have costs with their usage (there are freebie options, however this may come at the cost of output robustness). We can measure this usage via tokens. When we input text data into an API, it then breaks our data down into tokens, which we can define as individual units of a language.</p>
+<p>Naturally, this means we need to keep tabs on the amount of input and output tokens which are produced in a workflow. Be sure to check out the model pricing information to see the latest costs of the model you’d like to use, in addition to the general differences in model capabilities - we don’t always need the most ‘advanced’ model to answer our research question, and consequently, can save on resources.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tokens are generally about 4 words of English text. 100 tokens are approximately 75 words.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="structured-outputs-schemas-oh-my" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Structured Outputs &amp; Schemas, Oh My!</h1>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you’re interested in finding out more about how structured outputs work, OpenAI have some interesting resources online. For this documentation, we’ll just be focusing on why we use them in our work, and a a brief example to showcase their utility.</p>
+</div>
+</div>
+<p>Structured outputs are really handy for us to incorporate in our workflow, as they ensure the model will always generate responses that ‘agree’ with your pre-defined JSON schema.</p>
+<p>It’s not so much the LLM output is ‘incorrect’ in terms of meaning - but as we want our output format to be as machine-interpretable as possible for downstream analyses in R or Python, we basically want to make our lives easier (and the output, as accurate as possible), hence the inclusion of structured outputs. As the responses we receive don’t follow a specific format, we would need to parse the results again to ensure we can actually <strong>work</strong> with them.</p>
+<p>Structured outputs have a plethora of benefits which you’ll really reap from as you try them out in practice. For example, integrating your model responses into further workflows or data analysis becomes far easier than trying to make sense of non-deterministic, semi-random outputs we get from LLMs.</p>
+<section id="structured-output-example" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="structured-output-example"><span class="header-section-number">6.1</span> Structured Output Example</h2>
+<p>An example can better serve our understanding. Look at a typical LLM output you might receive after performing some sentiment analysis using <code>gpt-4.1-nano</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode html code-with-copy"><code class="sourceCode html"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>≥ 1     1 "The sentiment of the text is highly positive."      </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>≥ 2     2 "The sentiment of the text is negative."              </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>≥ 3     3 "The sentiment of the text is generally neutral with a slight lean towards negative."</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>≥ 4     4 "The sentiment of the text is highly positive."       </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>≥ 5     5 "The sentiment of the text is negative."            </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Even if we look at the text data and agree with these labels, these are unwieldy formats to work with later down the line. Instead, we can use a schema to determine the format of the response. The EndpointR documentation goes into much greater detail into the different helper functions one can use to define their schema:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sentiment_schema <span class="ot">&lt;-</span> <span class="fu">create_json_schema</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"simple_sentiment_schema"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">schema =</span> <span class="fu">schema_object</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">sentiment =</span> <span class="fu">schema_string</span>(<span class="at">description =</span> <span class="st">"Sentiment classification"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">enum =</span> <span class="fu">c</span>(<span class="st">"positive"</span>, <span class="st">"negative"</span>, <span class="st">"neutral"</span>)),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">required =</span> <span class="fu">list</span>(<span class="st">"sentiment"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Here, we can see the schema ensures that the model returns a list of emotions/sentiment it detects from the text we feed it, in a structure we define (as per the <code>enum</code> field).</p>
+<p>Even better, we can even send requests to OpenAI with our schema passed in:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>structured_df <span class="ot">&lt;-</span> <span class="fu">oai_complete_df</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  review_df,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">text_var =</span> text,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">id_var =</span> id,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">schema =</span> sentiment_schema, <span class="co"># this ensures the model gives us our pre-defined output </span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_file =</span> <span class="cn">NULL</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">system_prompt =</span> sentiment_system_prompt,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">concurrent_requests =</span> <span class="dv">2</span>, </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">chunk_size =</span> <span class="dv">5</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The output we receive will be in a nice, neat JSON format, readily suitable for downstream analyses.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It’s worth playing around with the different schema objects and how they apply to your project or research question. For instance, <code>schema_boolean</code> is particularly useful if you have a number of classification labels to potentially adhere (or not adhere) to your data, hence having a true/false formatted output will make your life easier.</p>
+<p>Equally, <code>schema_enum</code> is an effective way of making your code clearer and more readable, and because it is designed to keep data values consistent, it reduces errors or unexpected, invalid values. In any case, the EndpointR and OpenAI documents go into much more depth than this page can offer.</p>
+</div>
+</div>
+</section>
+</section>
+</section></section></main></div>
+
+
+
+
+
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+ <!-- /content -->
+
+
+
+
+</body></html>
